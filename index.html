@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo sát sự hài lòng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+
+        #startSurveyBtn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #startSurveyBtn:hover {
+            background-color: #45a049;
+        }
+
+        #thankYouMessage {
+            display: none;
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cảm ơn bạn đã dành thời gian!</h1>
+        <p>Vui lòng bấm nút dưới đây để bắt đầu khảo sát.</p>
+        <button id="startSurveyBtn">Bắt đầu khảo sát</button>
+        <p id="thankYouMessage">Bạn đã tham gia khảo sát rồi. Cảm ơn bạn!</p>
+    </div>
+
+    <script>
+        const developmentMode = true;  // Set to false when in productionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+
+        // Function to generate a unique ID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Function to get a parameter from the URL
+        function getParameterByName(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Check for development mode
+        if (developmentMode) {
+            localStorage.removeItem('hasParticipated');
+            localStorage.removeItem('userId');
+        }
+
+        // Check if the user has already participated
+        const userId = localStorage.getItem('userId');
+        const hasParticipated = localStorage.getItem('hasParticipated');
+        const startSurveyBtn = document.getElementById('startSurveyBtn');
+        const thankYouMessage = document.getElementById('thankYouMessage');
+
+        if (userId && hasParticipated && !developmentMode) {
+            startSurveyBtn.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+        }
+
+        // When the user clicks the "Start Survey" button
+        startSurveyBtn.addEventListener('click', function() {
+            // If the user has not been identified, create a new ID
+            if (!userId) {
+                const newUserId = generateUUID();
+                localStorage.setItem('userId', newUserId);
+                document.cookie = "userId=" + newUserId + "; path=/";
+            }
+
+            // If the user has already participated, show the thank you message
+            if (hasParticipated && !developmentMode) {
+                startSurveyBtn.style.display = 'none';
+                thankYouMessage.style.display = 'block';
+            } else {
+                // Mark that the user has participated
+                localStorage.setItem('hasParticipated', 'true');
+
+                // Get the employee code from the URL
+                const employeeCode = getParameterByName('employeeCode');
+
+                // Redirect to the Google Form with the employee code
+                const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSfyL4JXPzyZkkn11cCziGMALU5TNZ992Y-JjFz0d52Dgy0GJg/viewform?usp=pp_url&entry.835243091=" + employeeCode;
+                window.location.href = formUrl;
+            }
+        });
+    </script>
+</body>
+</html>
